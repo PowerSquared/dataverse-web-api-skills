@@ -17,7 +17,7 @@ Open this repository as a folder in Visual Studio Code. The skill is included in
 The first time you use the skill on a computer, open the VS Code terminal and run:
 
 ```sh
-npm install
+npm i
 ```
 
 When the skill needs access to Dataverse, Copilot starts the Power Apps sign-in process for you. Follow the sign-in window to connect your Power Platform account. You only need to sign in again if your session expires or you want to use a different account.
