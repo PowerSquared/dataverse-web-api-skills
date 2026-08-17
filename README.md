@@ -18,10 +18,9 @@ The first time you use the skill on a computer, open the VS Code terminal and ru
 
 ```sh
 npm install
-npx pa auth login
 ```
 
-Follow the sign-in window to connect your Power Platform account. You only need to do this again if your sign-in expires or you want to use a different account.
+When the skill needs access to Dataverse, Copilot starts the Power Apps sign-in process for you. Follow the sign-in window to connect your Power Platform account. You only need to sign in again if your session expires or you want to use a different account.
 
 ## Ask Copilot Chat
 
@@ -65,17 +64,13 @@ Your Dataverse security roles still apply. This skill cannot grant access that y
 
 ## Troubleshooting
 
-**Copilot says you are not signed in**
+**Copilot asks you to sign in**
 
-Open the VS Code terminal and run `npx pa auth login`, then complete the sign-in process.
+Follow the sign-in window that Copilot opens, then retry your request.
 
 **You have more than one Power Platform account**
 
-Ask Copilot which account it is using, then run this in the VS Code terminal to switch accounts:
-
-```sh
-npx pa auth switch --account you@example.com
-```
+Tell Copilot which account you want to use. It will switch to that account before continuing.
 
 **Copilot cannot perform an action**
 
