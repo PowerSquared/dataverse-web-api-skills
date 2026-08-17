@@ -1,92 +1,82 @@
 # Dataverse Web API Skill
 
-A GitHub Copilot skill for authenticating to a user-selected Microsoft Dataverse environment and making authenticated Dataverse Web API requests.
+Use GitHub Copilot Chat to work with your Microsoft Dataverse environment in plain language. Ask Copilot to look up tables, find records, inspect solutions, or make a change, and it uses your existing Power Apps sign-in to carry out the request.
 
-It reuses the encrypted sign-in cache created by the Power Apps CLI, so access tokens are acquired silently and never need to be copied into the workspace.
+You do not need to copy access tokens, write API requests, or share a password with Copilot.
 
-## What it provides
+## Before you start
 
-- A Copilot skill at `.agents/skills/dataverse-web-api/SKILL.md`
-- Environment URL and cloud validation
-- Silent token acquisition from the Power Apps CLI token cache
-- An authenticated client for Dataverse Web API `v9.2`
-- URL containment that rejects requests outside the selected environment's Web API
+You need:
 
-The client supports `GET`, `POST`, `PATCH`, `PUT`, and `DELETE` requests, including same-environment absolute OData links such as pagination URLs.
+- Visual Studio Code with GitHub Copilot Chat enabled
+- Access to the Dataverse environment you want to use
+- A Power Platform account that has permission to do the work you ask for
 
-## Prerequisites
+Open this repository as a folder in Visual Studio Code. The skill is included in the `.agents` folder and Copilot Chat finds it automatically.
 
-- Node.js 22 or later
-- A Power Platform account with access to the target Dataverse environment
-- Power Apps CLI authentication
-
-Install the dependencies:
+The first time you use the skill on a computer, open the VS Code terminal and run:
 
 ```sh
 npm install
-```
-
-Sign in to the Power Apps CLI:
-
-```sh
 npx pa auth login
 ```
 
-Check the signed-in account:
+Follow the sign-in window to connect your Power Platform account. You only need to do this again if your sign-in expires or you want to use a different account.
 
-```sh
-npx pa auth status
+## Ask Copilot Chat
+
+Open Copilot Chat in VS Code and describe what you want to do. Start with a question or a small read-only task while you get familiar with the skill.
+
+Examples:
+
+- `List the solutions in my Dataverse environment.`
+- `Show me the columns on the Account table.`
+- `Find the five most recently created contacts.`
+- `Find records in the Accounts table where the name contains Contoso.`
+- `What relationships does the Case table have?`
+- `Create a new column on the Project table called Project Code.`
+
+Copilot will ask which Dataverse environment to use before every request. Paste the environment URL from your Power Platform environment, for example:
+
+```text
+https://contoso.crm.dynamics.com
 ```
 
-When several accounts are cached, select the intended account explicitly:
+If your environment is not in the public Microsoft cloud, tell Copilot which cloud it uses: `usgov`, `usgovhigh`, `usgovdod`, or `china`.
+
+## Making changes
+
+Copilot can help create, update, and delete Dataverse data and metadata when your account has the required permissions. Before it makes a change, it explains the intended action. Read that summary and confirm only when it is correct.
+
+For destructive requests, be especially specific about the table, records, and outcome you intend. For example:
+
+```text
+Delete the test contact named Example Contact. First show me the matching record and ask for confirmation before deleting it.
+```
+
+Your Dataverse security roles still apply. This skill cannot grant access that your account does not already have.
+
+## Keep your account safe
+
+- Do not paste passwords, access tokens, or client secrets into Copilot Chat.
+- Use an environment URL only when Copilot asks for it.
+- Check the environment name and planned change before confirming write or delete operations.
+- Sign in with the Power Apps CLI again if Copilot says your session has expired.
+
+## Troubleshooting
+
+**Copilot says you are not signed in**
+
+Open the VS Code terminal and run `npx pa auth login`, then complete the sign-in process.
+
+**You have more than one Power Platform account**
+
+Ask Copilot which account it is using, then run this in the VS Code terminal to switch accounts:
 
 ```sh
 npx pa auth switch --account you@example.com
 ```
 
-## Use with GitHub Copilot
+**Copilot cannot perform an action**
 
-Keep the `.agents` directory in your workspace. Copilot discovers the skill and, before any Dataverse request, asks for the environment URL and cloud. The environment is selected per operation and is not read from environment variables, `.env` files, or project configuration.
-
-For write or metadata operations, review the planned change and confirm destructive work before the request is sent.
-
-## Programmatic usage
-
-```js
-import {
-  createClient,
-  getAccessToken,
-  validateEnvironment,
-} from './.agents/skills/dataverse-web-api/dataverse-client.mjs';
-
-const environment = validateEnvironment({
-  orgUrl: 'https://contoso.crm.dynamics.com',
-  cloud: 'public',
-});
-
-const { accessToken } = await getAccessToken(environment);
-const client = createClient({ orgUrl: environment.orgUrl, accessToken });
-
-const response = await client.get('/accounts?$select=name&$top=10');
-console.log(response.data.value);
-```
-
-Supported clouds are `public`, `usgov`, `usgovhigh`, `usgovdod`, and `china`. Use relative paths such as `/solutions`, `/accounts`, `/EntityDefinitions`, and `/RelationshipDefinitions` for Dataverse Web API operations.
-
-## Security and compatibility
-
-The client only permits HTTPS environment URLs without paths, credentials, queries, or fragments. It sends requests only to `/api/data/v9.2` within the selected environment; external URLs and protocol-relative URLs are rejected.
-
-Your Dataverse security roles determine the operations the client can perform. The client does not increase privileges or store access tokens.
-
-The Power Apps CLI token-cache integration mirrors `@microsoft/power-apps-cli` version `0.15.1`. Upgrade that dependency or the MSAL packages only after validating cache compatibility.
-
-## Development
-
-Run the tests:
-
-```sh
-npm test
-```
-
-The test suite validates environment URL handling, API URL containment, authorization headers, and error behavior.
+Your account may not have the necessary Dataverse permissions. Contact the environment administrator and describe the task you need to complete.
