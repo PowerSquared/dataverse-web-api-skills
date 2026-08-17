@@ -1,0 +1,17 @@
+{
+	"name": "dataverse-web-api-skills",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "node --test"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"dependencies": {
+		"@azure/msal-node": "^3.6.3",
+		"@azure/msal-node-extensions": "^1.5.17",
+		"@microsoft/power-apps-cli": "^0.15.1"
+	}
+}
